@@ -1,0 +1,15 @@
+[project]
+name = "nguxloi"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "dotenv>=0.9.9",
+    "fastapi>=0.120.4",
+    "google-genai>=1.47.0",
+    "openai>=2.6.1",
+    "python-multipart>=0.0.20",
+    "requests>=2.32.5",
+    "uvicorn>=0.38.0",
+]

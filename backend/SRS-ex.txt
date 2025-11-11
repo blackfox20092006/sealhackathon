@@ -1,0 +1,156 @@
+PROJECT SUMMARY
+
+To build a simple web app that allows composing/inputting text, selecting a voice (multiple options), generating audio (MP3/WAV), saving/retrieving, and scheduling daily internal broadcasts. The MVP (Minimum Viable Product) goal is: fast, easy-to-use for political officers, and low initial cost. If conditions allow, expand to include fine-tuning / cloning capabilities for the voices of comrades with good vocal quality (with their consent) to achieve a more "real" and natural sound.
+
+1. Objectives & Scope
+
+Primary Goal (MVP)
+
+Convert text-to-speech (TTS) directly on the web.
+
+Provide >3 default voices (various styles: male/female, speed, resonance).
+
+Allow exporting audio files (MP3/WAV).
+
+Support a "Preview" feature (listen to a short segment) and "Generate Full" (create a file for the entire content).
+
+Allow saving generated content and managing a broadcast schedule for daily internal broadcasts.
+
+Out of Scope (Initial Phase)
+
+Advanced voice cloning/training (this is an advanced feature, detailed below).
+
+Complex integration with specific internal systems (requires a separate request).
+
+2. Functional Requirements / User Stories
+
+As a User (Political Officer), I can:
+
+Log in/Register (simple, can use internal LDAP if required).
+
+Input or paste text; optionally upload .txt/.docx files.
+
+Select a voice from a dropdown: Voice A, Voice B, Voice C.
+
+Select speed (slow/normal/fast) and basic pitch/intonation.
+
+Press "Preview" to listen to a 30–60s segment.
+
+Press "Generate" to create the full audio, download as MP3/WAV.
+
+Save the broadcast to a Library (name, description, creation date).
+
+Schedule the broadcast for the system to automatically play/prepare the file for the internal broadcast time.
+
+As an Administrator, I can:
+
+Manage voices (add/remove/toggle), manage users, view history.
+
+View logs and statistics: total minutes generated, storage usage.
+
+The System must:
+
+Support a minimum of 30 minutes of continuous generation (approx. 6,000–7,000 words; estimated 30k–42k characters based on internal calculation: 6-7k words ≈ 30,000–42,000 characters).
+
+Allow saving audio files on the server or object storage (S3/GCS).
+
+3. Non-functional Requirements
+
+Preview Response Time: < 10s for a 20–30s segment (depends on TTS tech).
+
+Durability (30-min): Support exporting files >30 minutes (chunking if needed).
+
+Security: HTTPS, authentication, authorization. If voice cloning is used, must store consent forms and audit logs.
+
+Scalability: Microservice/worker architecture for easy upgrades (separate inference worker).
+
+Backup/Retention: Default 30-day retention, configurable.
+
+4. Proposed Architecture (High-Level)
+
+Frontend: React (or Vue) — Single Page Application, text editor, preview player, dashboard.
+
+Backend: Node.js / Python (FastAPI) — API for: creating TTS jobs, getting status, saving metadata, managing users.
+
+TTS Layer (Two implementation options):
+
+Cloud TTS API (Google Cloud Text-to-Speech / ElevenLabs / other): Call API, receive audio. (Pros: fast, high-quality, low-maintenance). (Google has a free tier for 1M WaveNet/4M Standard characters — see pricing page).
+
+Self-hosted Open-Source (Coqui TTS, XTTS, viXTTS for Vietnamese, etc.): Deploy models on server/GPU, local inference, allows fine-tuning/cloning. (Coqui TTS is a popular toolkit).
+
+Queue & Worker: Redis + Celery / RQ to process audio generation jobs (especially for long texts).
+
+Storage: Object storage (MinIO/S3) for audio files, metadata in PostgreSQL.
+
+Scheduler: Cron-like service or backend job scheduler for broadcast scheduling.
+
+5. Details on Advanced Feature (Voice cloning / style transfer)
+
+Objective: If possible, "analyze" and clone the voice of a comrade to create a more natural-sounding voice.
+
+Technical & Legal Requirements: Requires audio samples from the person (at least several minutes—more is better); must have written consent; store consent and logs.
+
+Technology: Voice-clone models can be fine-tuned (e.g., open-source repos for voice cloning, or commercial services like ElevenLabs). Self-hosting allows data control but requires powerful GPUs for training/tuning.
+
+6. Acceptance Criteria
+
+User A can paste a ~6,000-word text and generate a ~30-minute MP3/WAV file without errors (file creates and downloads successfully).
+
+At least 3 default voices are available; preview works in <15s.
+
+The system allows saving + scheduling daily broadcasts and displays a history.
+
+Logs/admin interface can show the 10 newest records and delete unnecessary files.
+
+If voice-cloning is implemented: must have electronic signature for consent, and the system must return a sample voice for testing before wide use.
+
+7. UI/UX (Brief)
+
+Main Page: Large editor (paste text), voice selection (dropdown with sample-play), speed slider, Preview / Generate / Save / Schedule buttons.
+
+Library: List of generated articles, filter by date, Play/Download/Delete buttons.
+
+Admin: User management, voice management, logs.
+(A wireframe can be drawn if you wish.)
+
+8. Implementation Options & Cost (Analysis of 3 options)
+
+Here are 3 options—corresponding to the feasibility within your stated budget (4–5 million VND) and if more budget is available.
+
+Option A: MVP (Ultra Low-Cost) (Using cloud TTS free/low-cost) — Fits 4–5M VND (if you only pay for small implementation or DIY):
+
+Uses Google Cloud TTS (or services like ElevenLabs) to quickly get natural voices. Google has a large free tier for characters per month.
+
+Simple backend + frontend deployed on a cheap VPS; audio stored in cloud storage.
+
+Estimated Cost: Development (if hiring a small freelancer) might exceed 4–5M VND. However, if you or your unit has an internal dev, an MVP could be deployed within this range (mostly server + API usage costs). Cloud TTS cost for 30 min (≈36k–42k chars) is within the free tier (if not used heavily).
+
+Option B: Self-hosted Open-Source (Coqui / viXTTS) — Advanced, requires upfront hardware cost:
+
+Deploy Coqui TTS / viXTTS on a server with a GPU (Rec: GPU ~8GB VRAM for light inference; training/cloning needs 16GB+).
+
+Pros: Full control, can fine-tune/clone. Cons: Requires capital investment for hardware or renting cloud GPUs (higher cost).
+
+Estimated Cost: If buying a new GPU/PC, the cost far exceeds 4–5M VND. If renting cloud GPUs (by the hour), operating costs will be higher than using a dedicated cloud TTS service.
+
+Option C: Hybrid (Pre-generate + schedule):
+
+Use cloud TTS to pre-generate files (batch) for 30 days → save them. Reduces real-time API call costs, suitable for a fixed broadcast schedule.
+
+This is the most economical choice for API usage & internal broadcasts.
+
+Source References: Google Cloud Text-to-Speech pricing (free tiers & per-character billing). ElevenLabs (free/credit packages). Coqui TTS (open-source toolkit). viXTTS (example of Vietnamese cloning).
+
+9. Specific Figures (for illustration)
+
+Text Size: 6,000–7,000 words ≈ 30,000–42,000 characters (avg. 5–6 chars/word incl. spaces).
+
+TTS Cloud Cost: With this character count, many services (like Google) are still within the free tier for WaveNet/Standard if you don't exceed it multiple times a month. The TTS service fee can be very small initially.
+
+10. Risks & Legal Considerations
+
+Voice Cloning: If cloning a real person's voice, written consent is required; must comply with internal/Army regulations. Note the risk of misuse → requires audit/logs + restricted permissions.
+
+Data Security: If the content is sensitive (political/military info), avoid third-party cloud services with unclear data policies. Prioritize self-hosting or services with clear SLAs.
+
+Real Cost: If you want "very" natural (human-like) voices, you usually need commercial models (ElevenLabs) or significant resources to fine-tune—both have costs.

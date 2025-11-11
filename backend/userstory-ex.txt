@@ -1,0 +1,16 @@
+I am looking to create a simple text-to-speech web application to be used for a competition within the Army.
+
+My key requirement is to have multiple, high-quality voice options. Ideally, it would be even better if the application could analyze and clone a specific voice that we provide ("analyze and read text in a voice we add").
+
+Context for the application:
+In the Army, we have a daily internal broadcast session. Political officers prepare scripts on political news, current events, and "Good Person, Good Deed" stories to broadcast to the troops.
+
+Currently, this process is time-consuming because it relies on live voice reading. We have tried using Google's standard TTS, but the voice is too dry and unnatural ("không hay"), so it's not very engaging. We need a program that is more convenient. We do have a few comrades with excellent, broadcast-quality voices, but they are a minority, which is why the voice cloning feature would be so valuable.
+
+Budget and Scope:
+Regarding the support cost, I am Army personnel, and our allowances ("phụ cấp") are not very high. If you can help, we are proposing a budget in the range of 4-5 million VND (approximately $160-$200 USD), or we can negotiate if it's a bit higher.
+
+It would be great if this could be a long-term solution. This isn't just for a competition; it has a very practical, long-term application.
+
+Technical Requirement:
+The system must be able to handle long-form text. At a minimum, it needs to be able to read for at least 30 minutes, which equates to roughly 6,000-7,000 words.
