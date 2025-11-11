@@ -2,7 +2,7 @@ from google import genai
 import os
 import ast
 class GeminiClient:
-    def __init__(self, api_key: str = 'AIzaSyBmt2jCVpl9g0Fax1VOObOM9ITDiIklZnM', task: str = None):
+    def __init__(self, api_key: str = 'AIzaSyBmt2jCVpl9g0Fax1VOObOM9ITDiIklZnM', task: str = None): #api test cho vui thôi :)) xóa lấu r
         self.api_key = api_key or os.getenv("GENAI_API_KEY")
         try:
             with open(f'./input/gemini_{task}.txt', 'r', encoding='utf-8') as file:
@@ -55,3 +55,4 @@ class GeminiClient:
     #     f'Here is the user story: {respond1} Here is the SRS: {respond2}'
     # )
     # print(respond4) 
+
